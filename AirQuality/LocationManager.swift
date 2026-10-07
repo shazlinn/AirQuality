@@ -7,13 +7,17 @@
 
 import Foundation
 import CoreLocation
+import Combine
+import MapKit
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+
     private let manager = CLLocationManager()
 
     @Published var latitude: Double?
     @Published var longitude: Double?
-    @Published var locationName = "Finding location..."
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    @Published var locationName: String = "Current Location"
 
     override init() {
         super.init()
@@ -27,6 +31,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.requestLocation()
     }
 
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
+
+        if manager.authorizationStatus == .authorizedAlways ||
+            manager.authorizationStatus == .authorized {
+            manager.requestLocation()
+        }
+    }
+
     func locationManager(
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
@@ -36,7 +49,35 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         latitude = location.coordinate.latitude
         longitude = location.coordinate.longitude
 
-        reverseGeocode(location)
+        Task {
+            await updateLocationName(from: location)
+        }
+    }
+
+    private func updateLocationName(from location: CLLocation) async {
+        guard let request = MKReverseGeocodingRequest(location: location) else {
+            return
+        }
+
+        do {
+            let mapItems = try await request.mapItems
+
+            guard let mapItem = mapItems.first else {
+                return
+            }
+
+            let name =
+                mapItem.addressRepresentations?.cityName ??
+                mapItem.name ??
+                "Current Location"
+
+            await MainActor.run {
+                self.locationName = name
+            }
+
+        } catch {
+            print("Reverse geocoding error:", error.localizedDescription)
+        }
     }
 
     func locationManager(
@@ -44,19 +85,5 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         didFailWithError error: Error
     ) {
         print("Location error:", error.localizedDescription)
-    }
-
-    private func reverseGeocode(_ location: CLLocation) {
-        CLGeocoder().reverseGeocodeLocation(location) { placemarks, _ in
-            guard let placemark = placemarks?.first else { return }
-
-            DispatchQueue.main.async {
-                self.locationName =
-                    placemark.locality ??
-                    placemark.subLocality ??
-                    placemark.administrativeArea ??
-                    "Current Location"
-            }
-        }
     }
 }
