@@ -88,6 +88,10 @@ struct ContentView: View {
         isLoading = true
         errorMessage = nil
 
+        let defaults = UserDefaults(suiteName: "group.com.shazlin.AirQuality")
+        defaults?.set(latitude, forKey: "latitude")
+        defaults?.set(longitude, forKey: "longitude")
+
         Task {
             do {
                 let service = AirQualityService()
@@ -106,19 +110,8 @@ struct ContentView: View {
                     forKey: "usAQI"
                 )
 
-                if let pm25 = result.pm2_5 {
-                    sharedDefaults?.set(
-                        pm25,
-                        forKey: "pm25"
-                    )
-                }
-
-                if let pm10 = result.pm10 {
-                    sharedDefaults?.set(
-                        pm10,
-                        forKey: "pm10"
-                    )
-                }
+                sharedDefaults?.set(result.pm2_5, forKey: "pm25")
+                sharedDefaults?.set(result.pm10, forKey: "pm10")
 
                 sharedDefaults?.set(
                     locationManager.locationName,
@@ -140,6 +133,9 @@ struct ContentView: View {
                 }
 
             } catch {
+
+                // The widget can retry independently even if the app's fetch fails.
+                WidgetCenter.shared.reloadTimelines(ofKind: "AirQualityWidget")
 
                 await MainActor.run {
                     errorMessage = error.localizedDescription

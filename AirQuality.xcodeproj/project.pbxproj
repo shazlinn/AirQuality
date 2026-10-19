@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10000000000000000000001 /* AirQualityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* AirQualityService.swift */; };
 		9DBEA91E3076C0760011DBC7 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DBEA9033076BCA60011DBC7 /* WidgetKit.framework */; };
 		9DBEA91F3076C0760011DBC7 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DBEA9053076BCA60011DBC7 /* SwiftUI.framework */; };
 		9DBEA92A3076C0780011DBC7 /* AirQualityWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9DBEA91D3076C0760011DBC7 /* AirQualityWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -35,6 +36,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A10000000000000000000002 /* AirQualityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AirQuality/AirQualityService.swift; sourceTree = SOURCE_ROOT; };
 		000000000000000000000120 /* AirQuality.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirQuality.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DBEA9033076BCA60011DBC7 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9DBEA9053076BCA60011DBC7 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -87,6 +89,7 @@
 		000000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				A10000000000000000000002 /* AirQualityService.swift */,
 				9DBEA9183076BD180011DBC7 /* AirQualityWidgetExtension.entitlements */,
 				000000000000000000000010 /* AirQuality */,
 				9DBEA9203076C0760011DBC7 /* AirQualityWidget */,
@@ -216,6 +219,7 @@
 		9DBEA9193076C0760011DBC7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				A10000000000000000000001 /* AirQualityService.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -467,6 +471,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AirQualityWidgetExtension.entitlements;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N36XZ836L3;
@@ -502,6 +507,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
 				CODE_SIGN_ENTITLEMENTS = AirQualityWidgetExtension.entitlements;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N36XZ836L3;

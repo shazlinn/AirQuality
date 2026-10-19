@@ -25,28 +25,42 @@ struct Provider: TimelineProvider {
         in context: Context,
         completion: @escaping (AirQualityEntry) -> Void
     ) {
-        completion(loadEntry())
+        completion(context.isPreview ? placeholder(in: context) : loadEntry())
     }
 
     func getTimeline(
         in context: Context,
         completion: @escaping (Timeline<AirQualityEntry>) -> Void
     ) {
-        let entry = loadEntry()
+        Task {
+            let defaults = UserDefaults(suiteName: "group.com.shazlin.AirQuality")
 
-        let nextUpdate =
-            Calendar.current.date(
-                byAdding: .minute,
-                value: 30,
-                to: Date()
-            ) ?? Date().addingTimeInterval(1800)
+            // The app saves coordinates once; subsequent refreshes run in the extension.
+            if let latitude = defaults?.object(forKey: "latitude") as? Double,
+               let longitude = defaults?.object(forKey: "longitude") as? Double {
+                do {
+                    let result = try await AirQualityService().fetchAirQuality(
+                        latitude: latitude,
+                        longitude: longitude
+                    )
+                    // Do not overwrite a newer location selected while the request ran.
+                    if defaults?.object(forKey: "latitude") as? Double == latitude,
+                       defaults?.object(forKey: "longitude") as? Double == longitude {
+                        defaults?.set(result.us_aqi, forKey: "usAQI")
+                        defaults?.set(result.pm2_5, forKey: "pm25")
+                        defaults?.set(result.pm10, forKey: "pm10")
+                        defaults?.set(Date(), forKey: "lastUpdated")
+                    }
+                } catch {
+                    // Keep the last successful readings and their original timestamp offline.
+                }
+            }
 
-        let timeline = Timeline(
-            entries: [entry],
-            policy: .after(nextUpdate)
-        )
-
-        completion(timeline)
+            completion(Timeline(
+                entries: [loadEntry()],
+                policy: .after(Date().addingTimeInterval(30 * 60))
+            ))
+        }
     }
 
     private func loadEntry() -> AirQualityEntry {
